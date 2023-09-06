@@ -6,7 +6,7 @@ DICTIONARY = {
   "AEIOUHWY": "."
 }
  
-def soundex_generate(token):
+def soundex_generate(token, size=7):
   token = token.replace(' ','').upper()
   soundex = token[0]
 
@@ -18,5 +18,5 @@ def soundex_generate(token):
           if code != soundex[-1]:
             soundex += code
   
-  soundex = soundex[:7].ljust(7,"0")
+  soundex = soundex[:size].ljust(size,"0")
   return soundex

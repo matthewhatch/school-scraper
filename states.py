@@ -53,7 +53,10 @@ ALL_STATES = {
 }
 
 def get_state(abbr):
-  return ALL_STATES[abbr]
+  return ALL_STATES[abbr.upper()]
+
+def get_abbr(id):
+  return list(ALL_STATES.keys())[list(ALL_STATES.values()).index(id)]
 
 def get_all_states():
   return ALL_STATES

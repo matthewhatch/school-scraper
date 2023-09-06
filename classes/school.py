@@ -2,6 +2,7 @@ import psycopg2
 from config import db_config
 from soundex import soundex_generate
 from termcolor import colored
+from banner import print_banner
 
 class School:
    def __init__(self, name, address1, city, state, zip, phone, county, enrollment, low_grade, high_grade):
@@ -15,12 +16,12 @@ class School:
       self.enrollment = enrollment
       self.low_grade = low_grade
       self.high_grade = high_grade
-      self.soundex = soundex_generate(self.name)
+      self.soundex = soundex_generate(self.name, 15)
       self.db_params = db_config()
 
    def save(self):
-      sql = """INSERT INTO schools(name, address1, city, state, county, enrollment, start_grade, end_grade, zip_code, soundex)
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING name;"""
+      sql = """INSERT INTO schools(name, address1, city, state, county, enrollment, start_grade, end_grade, zip_code, soundex, phone)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING name;"""
 
       conn = None
 
@@ -28,11 +29,12 @@ class School:
         conn = psycopg2.connect(**self.db_params)
 
         cur = conn.cursor()
-        cur.execute(sql, (self.name, self.address1, self.city, self.state, self.county, self.enrollment.replace(',',''), self.low_grade, self.high_grade, self.zip, self.soundex))
+        cur.execute(sql, (self.name, self.address1, self.city, self.state, self.county, self.enrollment.replace(',',''), self.low_grade, self.high_grade, self.zip, self.soundex, self.phone))
 
         name = cur.fetchone()[0]
         conn.commit()
         cur.close()
+        print_banner(self.state)
         print(colored(f'[√] {name} has been saved!', 'green'))
       except (Exception, psycopg2.DatabaseError) as error:
          print(error)
