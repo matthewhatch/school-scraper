@@ -1,3 +1,4 @@
+import logging
 import psycopg2
 from classes.address import Address
 from config import db_config
@@ -11,20 +12,31 @@ class Account:
         self.phone = phone
         self.db_params = db_config()
         self.soundex = soundex_generate(self.name, 15)
-    
-    def save(self):
+        logging.basicConfig(filename=f'{self.__class__.__name__.lower()}.log')
+
+    def generate_sql(self):
         table_name = f'{self.__class__.__name__}s'
-        sql = f"""
+        return f"""
           INSERT into {table_name}(name, address1, city, state, zip, phone, soundex)
           VALUES(%s, %s, %s, %s ,%s, %s, %s)
         """
-
+    
+    def execute_sql(self, cursor, sql):
+        cursor.execute(sql, self.name,
+            self.address.address_1,
+            self.address.city,
+            self.address.state,
+            self.address.zip,
+            self.phone,
+            self.soundex)
+    def save(self):
+        sql = self.generate_sql()
         conn = None
 
         try:
             conn = psycopg2.connect(**self.db_params)
             cur = conn.cursor()
-            cur.execute(sql, (self.name, self.address.address_1, self.address.city, self.address.state, self.address.zip, self.phone, self.soundex))
+            self.execute_sql(cur, sql)
             conn.commit()
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
@@ -48,7 +60,9 @@ class Account:
           if count != 0:
               results = True 
         except (Exception, psycopg2.DatabaseError) as error:
-          print(error)
+          message = f'Error in {self.__class__.__name__}: {error}'
+          logging.error(message)
+          print(colored(message, 'red'))
         finally:
           if conn is not None:
               conn.close()

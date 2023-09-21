@@ -4,10 +4,10 @@ import logging
 import requests
 import time
 import unicodedata
-import usaddress
 
 from banner import print_banner
 from bs4 import BeautifulSoup
+from classes.address import Address
 from classes.school import School
 from states import get_abbr
 from termcolor import colored
@@ -32,7 +32,6 @@ def scrape_school(id, page=1, wait=0,):
 def _scrape_school(url, id, page=1, wait=0):
     logging.basicConfig(filename='school_scraper.log', encoding='utf-8', level=logging.ERROR)
     global school_count
-    state = get_abbr(id)
 
     qs = f'&State={id}&SchoolPageNum={page}'
     response = requests.get(f'{url}{qs}')
@@ -42,45 +41,22 @@ def _scrape_school(url, id, page=1, wait=0):
     for i, table in enumerate(tables):
         if i == 0:
             continue
-
-        address_number = None
-        street_name = None
-        street_name_post_type = None
-        city = None
-        state = None
-        zip = None
         
         datas = table.find_all('td')
         grade_range = datas[5].font.text.split('-')
         school_name = datas[1].a.text
-        address = unicodedata.normalize('NFKC', datas[1].font.font.text)
-        
-        try:
-          parsed_address, _ = usaddress.tag(address)
-        except (usaddress.RepeatedLabelError) as repeatLabelError:
-          print(colored(f'[x] There was an issue with {address}', 'red'))
-          logging.error(repeatLabelError)
-          continue
-
-        for component, value in parsed_address.items():
-          if component == 'ZipCode':
-              zip = value
-          elif component == 'PlaceName':
-              city = value
-          elif component == 'AddressNumber':
-              address_number = value
-          elif component == 'StreetName':
-              street_name = value
-          elif component == 'StreetNamePostType':
-              street_name_post_type = value
-          elif component == 'StateName':
-              state = value
-
-        address1 = f'{address_number} {street_name} {street_name_post_type}' 
         enrollment = datas[4].font.text
         phone = datas[2].font.text
         county = datas[3].font.text
 
+        try:
+           address = Address(unicodedata.normalize('NFKC', datas[1].font.font.text))
+        except Exception as error:
+           message = f'school_scraper: {error}'
+           print(colored(message, 'red'))
+           logging.error(message)
+           continue
+ 
         try:
           int(enrollment.replace(',',''))
         except:
@@ -88,10 +64,7 @@ def _scrape_school(url, id, page=1, wait=0):
 
         school = School(
           school_name,
-          address1,
-          city,
-          state,
-          zip,
+          address,
           phone,
           county,
           enrollment,
@@ -99,17 +72,15 @@ def _scrape_school(url, id, page=1, wait=0):
           grade_range[-1]
         )
 
-        school_count += 1
-        exists = school.exists(school.soundex, school.zip)
-
-        if exists:
-          print_banner(state)
-          message = f'[*] {school_name} in {zip} already Exists in DB'
+        if school.exists():
+          print_banner(school.address.state)
+          message = f'[*] {school.name} in {school.address.zip} already Exists in DB'
           print(colored(message, 'light_magenta'))
           logging.info(message)
           continue
         
         school.save()
+        school_count += 1
         time.sleep(wait)
 
     if len(tables) > 1: # when length is 1, this includes only the header and we're done

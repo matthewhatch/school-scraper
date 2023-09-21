@@ -28,7 +28,9 @@ def scrape_college(id, page=1, wait=0):
           name = datas[0].h2.text
           address = Address(datas[0].text.replace(name, '').strip())
           phone = datas[1].text.split(':')[1].strip()
-          c = College(name, address, phone)
+          enrollment = datas[6].find_all('td')[1].text.split(' ')[0].replace(',', '')
+  
+          c = College(name, address, phone, enrollment)
           
           if c.exists():
               print_banner(state_abbr)

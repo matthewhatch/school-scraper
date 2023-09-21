@@ -5,6 +5,7 @@ from banner import print_banner
 from states import get_state, get_all_states
 from scrapers.school_scraper import scrape_school
 from scrapers.college_scraper import scrape_college
+from termcolor import colored
 
 if __name__ == '__main__':
     print_banner()
@@ -23,8 +24,9 @@ if __name__ == '__main__':
       try:
         state_id = get_state(args.state)
         scraper(state_id, 1, wait=args.wait)
-      except KeyError:
+      except KeyError as error:
         print('State Abrreviation not found')
+        print(colored(error, 'red'))
       except KeyboardInterrupt:
          print('[CTRL-C] Exiting...')
          sys.exit()
