@@ -1,8 +1,9 @@
+#!./env/bin/python
 import argparse
 import sys
 
 from banner import print_banner
-from states import get_state, get_all_states
+from utils.states import get_state, get_all_states
 from scrapers.school_scraper import scrape_school
 from scrapers.college_scraper import scrape_college
 from termcolor import colored
@@ -13,7 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('--state', '-s', type=str, required=False, metavar='State')
     parser.add_argument('--wait', '-w', type=int, default=0)
     parser.add_argument('--verbose', '-v', action='count', default=0, required=False)
-    parser.add_argument('-scraper', '-sc', type=str, default='school')
+    parser.add_argument('--scraper', '-sc', type=str, default='school', choices=['school', 'college'])
     args = parser.parse_args()
 
     scraper = scrape_school

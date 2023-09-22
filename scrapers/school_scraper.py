@@ -9,7 +9,7 @@ from banner import print_banner
 from bs4 import BeautifulSoup
 from classes.address import Address
 from classes.school import School
-from states import get_abbr
+from utils.states import get_abbr
 from termcolor import colored
 
 PUBLIC_SCHOOL_URL = 'https://nces.ed.gov/ccd/schoolsearch/school_list.asp?Search=1&SpecificSchlTypes=all&IncGrade=-1&LoGrade=10&HiGrade=13'
@@ -32,7 +32,7 @@ def scrape_school(id, page=1, wait=0,):
 def _scrape_school(url, id, page=1, wait=0):
     logging.basicConfig(filename='school_scraper.log', encoding='utf-8', level=logging.ERROR)
     global school_count
-
+    
     qs = f'&State={id}&SchoolPageNum={page}'
     response = requests.get(f'{url}{qs}')
     soup = BeautifulSoup(response.content, "html.parser")
@@ -73,7 +73,7 @@ def _scrape_school(url, id, page=1, wait=0):
         )
 
         if school.exists():
-          print_banner(school.address.state)
+          print_banner(school.address.state)  
           message = f'[*] {school.name} in {school.address.zip} already Exists in DB'
           print(colored(message, 'light_magenta'))
           logging.info(message)

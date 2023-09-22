@@ -12,7 +12,7 @@ def print_banner(state=None):
                                                     | |              
                                                     |_|              
 
-  SquadScraper - Scraping All the things...
+  SchoolScraper - Scraping All the things...
   Author: M. Hatch
   """
 
