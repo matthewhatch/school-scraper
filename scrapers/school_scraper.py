@@ -52,7 +52,7 @@ def _scrape_school(url, id, page=1, wait=0):
         try:
            address = Address(unicodedata.normalize('NFKC', datas[1].font.font.text))
         except Exception as error:
-           message = f'school_scraper: {error}'
+           message = f'school_scraper:There was ab issue getting address from {datas[1]}:{error}'
            print(colored(message, 'red'))
            logging.error(message)
            continue
