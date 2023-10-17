@@ -1,8 +1,10 @@
 #!./env/bin/python
 import argparse
+import datetime
 import sys
+import time
 
-from banner import print_banner
+from utils.banner import print_banner
 from utils.states import get_state, get_all_states
 from scrapers.school_scraper import scrape_school
 from scrapers.college_scraper import scrape_college
@@ -24,7 +26,13 @@ if __name__ == '__main__':
     if args.state:
       try:
         state_id = get_state(args.state)
-        scraper(state_id, 1, wait=args.wait)
+        start_time = time.perf_counter()
+        db, os = scraper(state_id, 1, wait=args.wait)
+        stop_time = time.perf_counter()
+        duration = str(datetime.timedelta(seconds=(stop_time - start_time)))
+        print(f'Added to DB: {db}')
+        print(f'Added to Opensearch: {os}')
+        print(f'Completed in {duration}')
       except KeyError as error:
         print('State Abrreviation not found')
         print(colored(error, 'red'))
@@ -34,8 +42,20 @@ if __name__ == '__main__':
     else:
        try:
         states = get_all_states()
+        start_time = time.perf_counter()
+        total_db_count = 0
+        total_os_count = 0
         for state in states:
-          scraper(states[state], 1, wait=args.wait)
+          db, os = scraper(states[state], 1, wait=args.wait)
+          total_db_count += db
+          total_os_count += os
+
+        stop_time = time.perf_counter()
+        duration = str(datetime.timedelta(seconds=(stop_time - start_time)))
+        print(f'Added to DB: {db}')
+        print(f'Added to Opensearch: {os}')
+        print(f'Completed in {duration}')
+        print('')
        except KeyboardInterrupt:
           print('[CTRL-C] Exiting...')
           sys.exit()

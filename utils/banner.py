@@ -18,6 +18,12 @@ def print_banner(state=None):
 
   if state:
     BANNER = f'{BANNER}\nState: {state}'
-  
+
   os.system('clear')
   print(colored(BANNER, 'cyan'))
+  print(colored(70*('-'), 'cyan'))
+
+def print_stats(db_count, opensearch_count):
+    print(colored(f'New Database Records: {db_count}','green'))
+    print(colored(f'New OpenSearch Records: {opensearch_count}','green'))
+    print(colored(70*('-'), 'cyan'))

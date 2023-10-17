@@ -1,9 +1,11 @@
 import psycopg2
 
+from utils.banner import print_banner
 from classes.account import Account
 from classes.address import Address
+from utils.config import get_config
 from termcolor import colored
-from banner import print_banner
+db_params = get_config()
 
 class School(Account):
    def __init__(self, name: str, address: Address, phone, county, enrollment, low_grade, high_grade):
@@ -20,7 +22,7 @@ class School(Account):
       conn = None
 
       try:
-        conn = psycopg2.connect(**self.db_params)
+        conn = psycopg2.connect(**db_params)
 
         cur = conn.cursor()
         cur.execute(sql, (self.name, self.address.address_1, self.address.city, self.address.state, self.county, self.enrollment.replace(',',''), self.low_grade, self.high_grade, self.address.zip, self.soundex, self.phone))
@@ -28,7 +30,7 @@ class School(Account):
         name = cur.fetchone()[0]
         conn.commit()
         cur.close()
-        print_banner(self.address.state)
+        # print_banner(self.address.state)
         print(colored(f'[√] {name} has been saved!', 'green'))
       except (Exception, psycopg2.DatabaseError) as error:
          print(colored(f'Error in {self.__class__.__name__}: {error}'))

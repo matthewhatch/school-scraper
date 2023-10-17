@@ -1,0 +1,5 @@
+[opensearch]
+url=https://youraccount_url/accounts/_doc
+graph_url=https://youraccount_url/accounts/_search?filter_path=-_shards,-took,-timed_out,-hits.max_score,-hits.total.relation,-hits.hits._index,-hits.hits._id,-hits.hits._source.address.parsed_address
+username=account
+password=pass
