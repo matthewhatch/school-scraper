@@ -5,12 +5,13 @@ from utils.banner import print_banner, print_stats
 from bs4 import BeautifulSoup
 from classes.address import Address
 from classes.college import College
-from utils.constants import COLLEGE_URL
+from utils.constants import COLLEGE_URL, COLLEGE_HOST, REQUEST_HEADERS
 from utils.states import get_abbr
 from termcolor import colored
 
 added_to_db = 0
 added_to_opensearch = 0
+REQUEST_HEADERS['host'] = COLLEGE_HOST
 
 def scrape_college(id, page=1, wait=0):
     global added_to_db, added_to_opensearch
@@ -20,7 +21,8 @@ def scrape_college(id, page=1, wait=0):
     print_stats(added_to_db, added_to_opensearch)
     qs=f'?s={state_abbr}&pg={page}'
 
-    response = requests.get(f'{COLLEGE_URL}{qs}')
+    response = requests.get(f'{COLLEGE_URL}{qs}', headers=REQUEST_HEADERS)
+
     if response.status_code == 200:   
       soup = BeautifulSoup(response.content, 'html.parser')
       colleges = soup.find_all(class_='itables')

@@ -18,11 +18,11 @@ Create OpenSearch
 usage
 ```
 # scrape schools in Alaska
-python ./main.py --scraper school --state AK
+python ./school-scraper.py --scraper school --state AK
 
 # scrape colleges in Rhode Island
-python ./main.py --scraper college --state RI
+python ./school-scraper.py --scraper college --state RI
 
 #scrape all colleges in all states
-python ./main.py --scraper college
+python ./school-scraper.py --scraper college
 ```

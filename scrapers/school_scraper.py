@@ -69,17 +69,12 @@ def _scrape_school(url, id, page=1, wait=0):
         )
 
         if school.exists():
-          print_banner(school.address.state)
-          print_stats(added_to_db, added_to_opensearch)
-
           message = f'[*] {school.name} in {school.address.zip} already Exists in DB'
           print(colored(message, 'light_magenta'))
           logging.info(message)
         else:
           school.save()
           added_to_db += 1
-          print_banner(school.address.state)
-          print_stats(added_to_db, added_to_opensearch)
           time.sleep(wait)
 
         if school.index_exists():
