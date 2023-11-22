@@ -17,6 +17,8 @@ if __name__ == '__main__':
     parser.add_argument('--wait', '-w', type=int, default=0)
     parser.add_argument('--verbose', '-v', action='count', default=0, required=False)
     parser.add_argument('--scraper', '-sc', type=str, default='school', choices=['school', 'college'])
+    parser.add_argument('--proxy', '-p', type=str, default = None)
+
     args = parser.parse_args()
 
     scraper = scrape_school
@@ -27,7 +29,7 @@ if __name__ == '__main__':
       try:
         state_id = get_state(args.state)
         start_time = time.perf_counter()
-        db, os = scraper(state_id, 1, wait=args.wait)
+        db, os = scraper(state_id, 1, wait=args.wait, proxy=args.proxy)
         stop_time = time.perf_counter()
         duration = str(datetime.timedelta(seconds=(stop_time - start_time)))
         print(f'Added to DB: {db}')
@@ -46,7 +48,7 @@ if __name__ == '__main__':
         total_db_count = 0
         total_os_count = 0
         for state in states:
-          db, os = scraper(states[state], 1, wait=args.wait)
+          db, os = scraper(states[state], 1, wait=args.wait, proxy=args.proxy)
           total_db_count += db
           total_os_count += os
 
