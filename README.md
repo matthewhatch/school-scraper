@@ -25,4 +25,7 @@ python ./school-scraper.py --scraper college --state RI
 
 #scrape all colleges in all states
 python ./school-scraper.py --scraper college
+
+# scrape all colleges in all states using a proxy server
+python ./school-scraper.py --scraper college --proxy 127.0.0.1:8080
 ```

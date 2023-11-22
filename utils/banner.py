@@ -23,7 +23,10 @@ def print_banner(state=None):
   print(colored(BANNER, 'cyan'))
   print(colored(70*('-'), 'cyan'))
 
-def print_stats(db_count, opensearch_count):
+def print_stats(db_count, opensearch_count, proxy=None):
+    if proxy:
+       print(colored(f'Proxy: {proxy}', 'green'))
+
     print(colored(f'New Database Records: {db_count}','green'))
     print(colored(f'New OpenSearch Records: {opensearch_count}','green'))
     print(colored(70*('-'), 'cyan'))
