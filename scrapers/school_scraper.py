@@ -11,7 +11,7 @@ from classes.school import School
 from requests.packages import urllib3
 from termcolor import colored
 from utils.banner import print_banner, print_stats
-from utils.constants import PUBLIC_SCHOOL_URL, PRIVATE_SCHOOL_URL
+from utils.constants import PUBLIC_SCHOOL_URL, PRIVATE_SCHOOL_URL, REQUEST_HEADERS
 from utils.states import get_abbr
 
 URLS = [PUBLIC_SCHOOL_URL, PRIVATE_SCHOOL_URL]
@@ -40,7 +40,7 @@ def _scrape_school(url, id, page=1, wait=0, proxy=None):
       urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
        
     qs = f'&State={id}&SchoolPageNum={page}'
-    response = requests.get(f'{url}{qs}', proxies=proxy_settings, verify=ssl_veryify)
+    response = requests.get(f'{url}{qs}', headers=REQUEST_HEADERS, proxies=proxy_settings, verify=ssl_veryify)
     soup = BeautifulSoup(response.content, "html.parser")
     tables = soup.find_all(tag_selector)
     
